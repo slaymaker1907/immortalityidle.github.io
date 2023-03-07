@@ -295,6 +295,7 @@ export class BattleService {
   }
 
   youAttack() {
+    const characterState = this.characterService.characterState;
     this.characterService.characterState.accuracy = Math.min((this.troubleKills + Math.sqrt(this.characterService.characterState.attributes.speed.value)) / this.troubleKills / 2, 1)
     if (this.currentEnemy && this.characterService.characterState.status.health.value > 0) { // Check health for immortals
       if (Math.random() > this.characterService.characterState.accuracy) {
@@ -389,8 +390,7 @@ export class BattleService {
         }
         if (this.characterService.characterState.equipment.leftHand.weaponStats.effect === "life") {
           this.logService.addLogMessage("Your " + this.characterService.characterState.equipment.leftHand.name + " healed you for " + durabilityDamage + " as you struck the enemy.", "STANDARD", "COMBAT");
-          this.characterService.characterState.status.health.value += durabilityDamage;
-          this.characterService.characterState.checkOverage();
+          characterState.increaseCharacterStatus(characterState.status.health, durabilityDamage);
         }
         if (this.characterService.characterState.equipment.leftHand.weaponStats.durability <= 0) {
           this.inventoryService.addItem(this.characterService.characterState.equipment.leftHand);
@@ -413,8 +413,7 @@ export class BattleService {
         }
         if (this.characterService.characterState.equipment.rightHand.weaponStats.effect === "life") {
           this.logService.addLogMessage("Your " + this.characterService.characterState.equipment.rightHand.name + " healed you for " + durabilityDamage + " as you struck the enemy.", "STANDARD", "COMBAT");
-          this.characterService.characterState.status.health.value += durabilityDamage;
-          this.characterService.characterState.checkOverage();
+          characterState.increaseCharacterStatus(characterState.status.health, durabilityDamage);
         }
         if (this.characterService.characterState.equipment.rightHand.weaponStats.durability <= 0) {
           this.inventoryService.addItem(this.characterService.characterState.equipment.rightHand);
@@ -579,8 +578,8 @@ export class BattleService {
       if (armor.armorStats.effect === "life") {
         const amountHealed = (durabilityDamage + Math.floor(armor.armorStats.durability * this.degradeFactor)) * 10;
         this.logService.addLogMessage("Your " + armor.name + " healed you for " + amountHealed + " as the enemy struck it.", "STANDARD", "COMBAT");
-        this.characterService.characterState.status.health.value += amountHealed;
-        this.characterService.characterState.checkOverage();
+        const characterState = this.characterService.characterState;
+        characterState.increaseCharacterStatus(characterState.status.health, amountHealed);
       }
       if (armor.armorStats.durability <= 0) {
         // it broke, unequip it

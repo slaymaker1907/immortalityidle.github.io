@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { BattleService } from './battle.service';
 import { Activity, ActivityLoopEntry, ActivityType } from '../game-state/activity';
-import { AttributeType, CharacterAttribute } from '../game-state/character';
+import { AttributeType, CharacterAttribute} from '../game-state/character';
 import { CharacterService } from '../game-state/character.service';
 import { HomeService, HomeType } from '../game-state/home.service';
 import { InventoryService } from '../game-state/inventory.service';
@@ -1344,41 +1344,42 @@ export class ActivityService {
       ],
       consequence: [
         () => {
-          this.characterService.characterState.status.stamina.value += 50;
-          this.characterService.characterState.status.health.value += 2;
-          this.characterService.characterState.checkOverage();
+          const characterState = this.characterService.characterState;
+          characterState.increaseCharacterStatus(characterState.status.stamina, 50);
+          characterState.increaseCharacterStatus(characterState.status.health, 2);
           if (this.characterService.characterState.yinYangUnlocked) {
             this.characterService.characterState.yin++;
           }
         },
         () => {
-          this.characterService.characterState.status.stamina.value += 100;
-          this.characterService.characterState.status.health.value += 10;
+          const characterState = this.characterService.characterState;
+          characterState.increaseCharacterStatus(characterState.status.stamina, 100);
+          characterState.increaseCharacterStatus(characterState.status.health, 10);
           this.characterService.characterState.increaseAttribute('spirituality', 0.001);
           if (this.characterService.characterState.manaUnlocked) {
+            characterState.increaseCharacterStatus(characterState.status.mana, 1);
             this.characterService.characterState.status.mana.value += 1;
           }
-          this.characterService.characterState.checkOverage();
           if (this.characterService.characterState.yinYangUnlocked) {
             this.characterService.characterState.yin++;
           }
         },
         () => {
-          this.characterService.characterState.status.stamina.value += 200;
-          this.characterService.characterState.status.health.value += 20;
-          this.characterService.characterState.status.mana.value += 10
+          const characterState = this.characterService.characterState;
+          characterState.increaseCharacterStatus(characterState.status.stamina, 200);
+          characterState.increaseCharacterStatus(characterState.status.health, 20);
+          characterState.increaseCharacterStatus(characterState.status.mana, 10);
           this.characterService.characterState.increaseAttribute('spirituality', 0.5);
-          this.characterService.characterState.checkOverage();
           if (this.characterService.characterState.yinYangUnlocked) {
             this.characterService.characterState.yin++;
           }
         },
         () => {
-          this.characterService.characterState.status.stamina.value += 300;
-          this.characterService.characterState.status.health.value += 30;
-          this.characterService.characterState.status.mana.value += 20
+          const characterState = this.characterService.characterState;
+          characterState.increaseCharacterStatus(characterState.status.stamina, 300);
+          characterState.increaseCharacterStatus(characterState.status.health, 30);
+          characterState.increaseCharacterStatus(characterState.status.mana, 20);
           this.characterService.characterState.increaseAttribute('spirituality', 1);
-          this.characterService.characterState.checkOverage();
           if (this.characterService.characterState.yinYangUnlocked) {
             if (this.characterService.characterState.yin > this.characterService.characterState.yang) {
               this.characterService.characterState.yang++;
@@ -2590,10 +2591,11 @@ export class ActivityService {
         this.characterService.characterState.increaseAttribute(lowStat, 1);
         this.characterService.characterState.increaseAttribute('spirituality', 0.01);
 
-        this.characterService.characterState.healthBonusSoul++;
-        this.characterService.characterState.status.stamina.max++;
-        this.characterService.characterState.status.mana.max++;
-        this.characterService.characterState.checkOverage()
+        const characterState = this.characterService.characterState;
+        characterState.increaseHealthBonusSoul(1);
+        characterState.increaseHealthBonusSoul(1);
+        characterState.increaseMaxStamina(1);
+        characterState.increaseMaxMana(1);
         if (this.characterService.characterState.yinYangUnlocked) {
           if (this.characterService.characterState.yin > this.characterService.characterState.yang) {
             this.characterService.characterState.yang++;

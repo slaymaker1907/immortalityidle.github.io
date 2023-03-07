@@ -1456,14 +1456,11 @@ export class InventoryService {
     }
     this.lifetimePillsUsed += quantity;
     if (pill.effect === "Longevity") {
-      this.characterService.characterState.alchemyLifespan += pill.power * quantity;
-      if (this.characterService.characterState.alchemyLifespan > 36500) {
-        this.characterService.characterState.alchemyLifespan = 36500;
-      }
+      const characterState = this.characterService.characterState;
+      characterState.alchemyLifespan = Math.max(characterState.alchemyLifespan + (pill.power * quantity), 36500);
     } else if (pill.effect === "Empowerment") {
       this.characterService.characterState.empowermentFactor += 0.01;
     }
-    this.characterService.characterState.checkOverage();
   }
 
   /** Returns the number of open inventory slots. */

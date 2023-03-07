@@ -43,8 +43,14 @@ export type EquipmentPosition = 'head' | 'feet' | 'body' | 'legs' | 'leftHand' |
 
 export type EquipmentSlots = { [key in EquipmentPosition]: Equipment | null };
 
+interface CharacterStatusState {
+  description: string;
+  value: number;
+  max: number;
+}
+
 type StatusType = 'health' | 'stamina' | 'mana' | 'nourishment';
-type CharacterStatus = { [key in StatusType]: { description: string, value: number, max: number } }
+type CharacterStatus = { [key in StatusType]: CharacterStatusState }
 
 export interface CharacterProperties {
   attributes: AttributeObject,
@@ -651,6 +657,50 @@ export class Character {
     if (this.money > this.maxMoney) {
       this.money = this.maxMoney;
     }
+  }
+
+  increaseCharacterStatus(status: CharacterStatusState, amount: number) {
+    status.value = Math.min(status.value + amount, status.max);
+  }
+
+  increaseHealthBonusFood(amount: number) {
+    this.healthBonusFood = Math.min(this.healthBonusFood + amount, 1900);
+  }
+
+  increaseHealthBonusBath(amount: number) {
+    this.healthBonusBath = Math.min(this.healthBonusBath + amount, 8000);
+  }
+
+  increaseHealthBonusMagic(amount: number) {
+    let healthBonusMagicCap = 10000;
+    if (this.yinYangUnlocked) {
+      healthBonusMagicCap += (2 * this.yinYangBalance * healthBonusMagicCap);
+    }
+    this.healthBonusMagic = Math.min(this.healthBonusMagic + amount, healthBonusMagicCap);
+  }
+
+  increaseHealthBonusSoul(amount: number) {
+    let healthBonusSoulCap = 20000;
+    if (this.yinYangUnlocked) {
+      healthBonusSoulCap += (2 * this.yinYangBalance * healthBonusSoulCap);
+    }
+    this.healthBonusSoul = Math.min(this.healthBonusSoul + amount, healthBonusSoulCap);
+  }
+
+  increaseMoney(amount: number) {
+    this.money = Math.min(this.money + amount, this.maxMoney);
+  }
+
+  increaseMaxStamina(amount: number) {
+    this.status.stamina.max = Math.min(this.status.stamina.max + amount, 1000000);
+  }
+
+  increaseMaxMana(amount: number) {
+    this.status.mana.max = Math.min(this.status.mana.max + amount, 1000000);
+  }
+
+  increaseMaxNourishment(amount: number) {
+    this.status.nourishment.max = Math.min(this.status.nourishment.max + amount, 1000);
   }
 
   getProperties(): CharacterProperties {
